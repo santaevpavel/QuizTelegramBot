@@ -1,2 +1,3 @@
 rootProject.name = 'QuizTelegramBot'
+include 'core'
 
