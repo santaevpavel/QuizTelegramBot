@@ -5,30 +5,36 @@ import ru.monopolio.quiz.core.repository.IMessageRepository
 
 class AnswerUseCase(
         repositories: Repositories,
+        private val chatId: Long,
         private val answer: String,
         private val player: Player
 ): UseCase(repositories) {
 
     override fun run() {
+        val session = repositories
+                .sessionRepository
+                .getSessionByChat(chatId) ?: throw IllegalStateException("Not found session for chat $chatId")
+
         val round = repositories
                 .roundRepository
-                .getLatestRound()
+                .getLatestRound(session)
+
         if (round.question.answer == answer) {
             repositories
                     .messageRepository
-                    .createWinnerMessage(IMessageRepository.WinnerMessage(player.name))
-            val points = repositories
+                    .createWinnerMessage(IMessageRepository.WinnerMessage(chatId, player.name))
+            /*val points = repositories
                     .pointsRepository
                     .getPoints(player)
             repositories
                     .pointsRepository
-                    .setPoints(player, points + 1)
+                    .setPoints(player, points + 1)*/
             startNewRound()
         }
     }
 
     private fun startNewRound() {
-        NewRoundUseCase(repositories).run()
+        NewRoundUseCase(repositories, chatId).run()
     }
 
 }

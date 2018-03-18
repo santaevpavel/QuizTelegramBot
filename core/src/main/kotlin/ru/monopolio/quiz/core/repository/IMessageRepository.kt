@@ -12,17 +12,22 @@ interface IMessageRepository {
 
     fun createPointsMessage(message: PointsMessage)
 
-    class CreateGameMessage
+    open class Message(val chatId: Long)
 
-    data class WinnerMessage(
+    class CreateGameMessage(chatId: Long) : Message(chatId)
+
+    class WinnerMessage(
+            chatId: Long,
             val player: String
-    )
+    ) : Message(chatId)
 
-    data class QuestionMessage(
+    class QuestionMessage(
+            chatId: Long,
             val question: String
-    )
+    ) : Message(chatId)
 
-    data class PointsMessage(
+    class PointsMessage(
+            chatId: Long,
             val points: Map<Player, Int>
-    )
+    ) : Message(chatId)
 }

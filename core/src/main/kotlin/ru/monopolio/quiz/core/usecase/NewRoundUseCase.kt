@@ -4,22 +4,27 @@ import ru.monopolio.quiz.core.entity.Round
 import ru.monopolio.quiz.core.repository.IMessageRepository
 
 class NewRoundUseCase(
-        repositories: Repositories
+        repositories: Repositories,
+        private val chatId: Long
 ) : UseCase(repositories) {
 
     override fun run() {
+        val session = repositories
+                .sessionRepository
+                .getSessionByChat(chatId) ?: throw IllegalStateException("Not found session for chat $chatId")
+
         val question = repositories
                 .questionRepository
                 .getNextQuestion()
 
         repositories
                 .roundRepository
-                .createRound(Round(question))
+                .createRound(Round(session, question))
 
         repositories
                 .messageRepository
                 .createNewQuestionMessage(
-                        IMessageRepository.QuestionMessage(question.question)
+                        IMessageRepository.QuestionMessage(session.chatId, question.question)
                 )
     }
 

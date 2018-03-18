@@ -8,8 +8,7 @@ import ru.monopolio.quiz.telegram.requests.SendMessageRequest
 import java.util.concurrent.TimeUnit
 
 class MessageRepository(
-        val bot: TelegramBot,
-        val chatId: Long
+        private val bot: TelegramBot
 ) : IMessageRepository {
 
     override fun createPointsMessage(message: IMessageRepository.PointsMessage) {
@@ -20,25 +19,25 @@ class MessageRepository(
                     msg += "${pair.key} - ${pair.value} очков\n"
                 }
 
-        launch { sendMessage(msg) }
+        launch { sendMessage(message.chatId, msg) }
     }
 
     override fun createCreateGameMessage(message: IMessageRepository.CreateGameMessage) {
-        launch { sendMessage("Новая игра!") }
+        launch { sendMessage(message.chatId, "Новая игра!") }
     }
 
     override fun createWinnerMessage(message: IMessageRepository.WinnerMessage) {
-        launch { sendMessage("Выиграл ${message.player}") }
+        launch { sendMessage(message.chatId, "Выиграл ${message.player}") }
     }
 
     override fun createNewQuestionMessage(message: IMessageRepository.QuestionMessage) {
         launch {
             delay(3, TimeUnit.SECONDS)
-            sendMessage("Новый вопрос: ${message.question}")
+            sendMessage(message.chatId, "Новый вопрос: ${message.question}")
         }
     }
 
-    private suspend fun sendMessage(msg: String) {
+    private suspend fun sendMessage(chatId: Long, msg: String) {
         bot.sendMessage(SendMessageRequest(chatId, msg))
     }
 

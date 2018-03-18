@@ -1,21 +1,25 @@
 package ru.monopolio.quiz.telegram.repositories
 
-object SessionRepository{
+import ru.monopolio.quiz.core.entity.Session
+import ru.monopolio.quiz.core.repository.ISessionRepository
+
+object SessionRepository : ISessionRepository {
 
     private val list = mutableListOf<Session>()
+    private var nextId = 0L
 
-    fun createSession(session: Session) {
+    override fun createSession(session: Session): Session {
         list.add(session)
+        nextId++
+        return session.copy(id = nextId)
     }
 
-    fun getSession(chatId: Long): Session? {
-        return list.firstOrNull { it.chatId == chatId }
+    override fun getSessionByChat(chatId: Long): Session? = list.firstOrNull { it.chatId == chatId }
+
+    override fun deleteSession(id: Long) {
+        list.removeIf { it.id == id }
     }
 
-    fun deleteSession(chatId: Long) {
-        list.removeIf{ it.chatId == chatId }
-    }
+    override fun getSession(id: Long) = list.first { it.id == id }
 
 }
-
-data class Session(var chatId: Long)

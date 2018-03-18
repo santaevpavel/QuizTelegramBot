@@ -1,9 +1,14 @@
 package ru.monopolio.quiz.core.repository
 
+import ru.monopolio.quiz.core.entity.Session
+
 interface ISessionRepository {
 
-    fun createSession(): Long
+    fun createSession(session: Session): Session
 
-    fun getSession(id: Long)
+    fun deleteSession(id: Long)
 
+    fun getSession(id: Long): Session
+
+    fun getSessionByChat(chatId: Long): Session?
 }
