@@ -4,7 +4,7 @@ class ShowPointUseCase(
         repositories: Repositories
 ) : UseCase(repositories) {
 
-    override fun run() {
+    override suspend fun run() {
         /*val question = repositories
                 .pointsRepository
                 .getPoints()

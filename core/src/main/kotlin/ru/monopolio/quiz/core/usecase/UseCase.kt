@@ -5,7 +5,7 @@ import ru.monopolio.quiz.core.repository.*
 abstract class UseCase(
         val repositories: Repositories
 ) {
-    abstract fun run()
+    abstract suspend fun run()
 }
 
 data class Repositories(

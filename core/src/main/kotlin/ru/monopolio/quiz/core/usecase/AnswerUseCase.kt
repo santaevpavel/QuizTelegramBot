@@ -10,7 +10,7 @@ class AnswerUseCase(
         private val player: Player
 ): UseCase(repositories) {
 
-    override fun run() {
+    override suspend fun run() {
         val session = repositories
                 .sessionRepository
                 .getSessionByChat(chatId) ?: throw IllegalStateException("Not found session for chat $chatId")
@@ -33,7 +33,7 @@ class AnswerUseCase(
         }
     }
 
-    private fun startNewRound() {
+    private suspend fun startNewRound() {
         NewRoundUseCase(repositories, chatId).run()
     }
 

@@ -16,11 +16,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.jetty.Jetty
 import org.slf4j.LoggerFactory
-import ru.monopolio.quiz.core.entity.Player
-import ru.monopolio.quiz.core.usecase.AnswerUseCase
 import ru.monopolio.quiz.core.usecase.Repositories
-import ru.monopolio.quiz.core.usecase.StartGameUseCase
-import ru.monopolio.quiz.core.usecase.StopGameUseCase
 import ru.monopolio.quiz.properties.LocalProperties
 import ru.monopolio.quiz.telegram.TelegramBot
 import ru.monopolio.quiz.telegram.entities.Update
@@ -29,13 +25,17 @@ import ru.monopolio.quiz.telegram.repositories.*
 fun main(args: Array<String>) {
     val token = LocalProperties().token
     val bot = TelegramBot(token)
-
     val repositories = Repositories(
             roundRepository = RoundRepository,
             messageRepository = MessageRepository(bot),
             questionRepository = QuestionRepository,
             pointsRepository = PointsRepository,
             sessionRepository = SessionRepository
+    )
+    val useCaseHandler = UseCaseHandler()
+    val updateHandler = UpdateHandler(
+            useCaseHandler,
+            repositories
     )
 
     val server = embeddedServer(Jetty, port = 9000) {
@@ -46,32 +46,12 @@ fun main(args: Array<String>) {
             }
             post("/$token") {
                 val body = call.request.receiveContent().readText()
-
                 val update = Gson().fromJson(body, Update::class.java)
+
                 log.debug("webhook called: ${update.message?.text}")
+
                 call.respond(HttpStatusCode.OK, "OK")
-
-                val text = update.message?.text
-                val chatId = update.message?.chat?.id ?: -1
-
-                when (text!!.toLowerCase()) {
-                    "start" -> {
-                        StartGameUseCase(repositories, chatId).run()
-                    }
-                    "end" -> {
-                        StopGameUseCase(repositories, chatId).run()
-                    }
-                    "points" -> {
-                    }
-                    else -> {
-                        AnswerUseCase(
-                                repositories,
-                                chatId,
-                                update.message.text,
-                                Player(-1, update.message.from?.firstName!!)
-                        ).run()
-                    }
-                }
+                updateHandler.handleUpdate(update)
             }
         }
     }

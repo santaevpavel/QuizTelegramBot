@@ -5,7 +5,7 @@ class StopGameUseCase(
         private val chatId: Long
 ) : UseCase(repositories) {
 
-    override fun run() {
+    override suspend fun run() {
         val repository = repositories
                 .sessionRepository
 

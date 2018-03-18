@@ -8,7 +8,7 @@ class NewRoundUseCase(
         private val chatId: Long
 ) : UseCase(repositories) {
 
-    override fun run() {
+    override suspend fun run() {
         val session = repositories
                 .sessionRepository
                 .getSessionByChat(chatId) ?: throw IllegalStateException("Not found session for chat $chatId")
