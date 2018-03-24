@@ -10,14 +10,32 @@ object RoundRepository : IRoundRepository {
     private val rounds: MutableList<Round> = mutableListOf()
 
     override fun createRound(round: Round): Round {
-        return round.apply {
-            rounds.add(this)
-            nextId++
-            copy(id = nextId)
-        }
+        nextId++
+        return round
+                .copy(id = nextId)
+                .also {
+                    rounds.add(it)
+                    log()
+                }
     }
 
     override fun getLatestRound(session: Session): Round {
-        return rounds.last { it.session.id == session.id }
+        return rounds.last { it.session.id == session.id }.also { log() }
+    }
+
+    override fun updateRound(round: Round) {
+        rounds
+                .indexOfFirst { it.id == round.id }
+                .takeIf { it != -1 }
+                ?.let { rounds.set(it, round) }
+                .also { log() }
+    }
+
+    private fun log() {
+        println("------")
+        rounds.forEach { r ->
+            println(r)
+        }
+        println("------")
     }
 }

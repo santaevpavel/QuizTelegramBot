@@ -2,7 +2,7 @@ package ru.monopolio.quiz.core.usecase
 
 class ShowPointUseCase(
         repositories: Repositories
-) : UseCase(repositories) {
+) : UseCase<Unit>(repositories) {
 
     override suspend fun run() {
         /*val question = repositories

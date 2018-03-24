@@ -1,11 +1,9 @@
 package ru.monopolio.quiz.telegram.repositories
 
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import ru.monopolio.quiz.core.repository.IMessageRepository
 import ru.monopolio.quiz.telegram.TelegramBot
 import ru.monopolio.quiz.telegram.requests.SendMessageRequest
-import java.util.concurrent.TimeUnit
 
 class MessageRepository(
         private val bot: TelegramBot
@@ -31,10 +29,15 @@ class MessageRepository(
     }
 
     override fun createNewQuestionMessage(message: IMessageRepository.QuestionMessage) {
-        launch {
-            delay(3, TimeUnit.SECONDS)
-            sendMessage(message.chatId, "Новый вопрос: ${message.question}")
-        }
+        launch { sendMessage(message.chatId, "Новый вопрос: ${message.question}") }
+    }
+
+    override fun createStopRoundMessage(message: IMessageRepository.StopRoundMessage) {
+        launch { sendMessage(message.chatId, "Никто не ответил на вопрос. Правильный ответ: ${message.answer}") }
+    }
+
+    override fun createStopRoundMessage2(message: IMessageRepository.StopRoundMessage) {
+        launch { sendMessage(message.chatId, "Раунд закончился") }
     }
 
     private suspend fun sendMessage(chatId: Long, msg: String) {

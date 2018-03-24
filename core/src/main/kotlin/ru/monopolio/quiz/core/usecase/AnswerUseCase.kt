@@ -8,33 +8,25 @@ class AnswerUseCase(
         private val chatId: Long,
         private val answer: String,
         private val player: Player
-): UseCase(repositories) {
+) : UseCase<Unit>(repositories) {
 
     override suspend fun run() {
         val session = repositories
                 .sessionRepository
-                .getSessionByChat(chatId) ?: throw IllegalStateException("Not found session for chat $chatId")
+                .getSessionByChat(chatId) ?: return
 
         val round = repositories
                 .roundRepository
                 .getLatestRound(session)
 
+        if (round.isFinished) return
+
         if (round.question.answer == answer) {
+            StopRoundUseCase(repositories, chatId, round, false).run()
             repositories
                     .messageRepository
                     .createWinnerMessage(IMessageRepository.WinnerMessage(chatId, player.name))
-            /*val points = repositories
-                    .pointsRepository
-                    .getPoints(player)
-            repositories
-                    .pointsRepository
-                    .setPoints(player, points + 1)*/
-            startNewRound()
         }
-    }
-
-    private suspend fun startNewRound() {
-        NewRoundUseCase(repositories, chatId).run()
     }
 
 }

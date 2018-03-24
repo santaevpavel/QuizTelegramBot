@@ -7,6 +7,8 @@ interface IRoundRepository {
 
     fun createRound(round: Round): Round
 
+    fun updateRound(round: Round)
+
     fun getLatestRound(session: Session): Round
 
 }

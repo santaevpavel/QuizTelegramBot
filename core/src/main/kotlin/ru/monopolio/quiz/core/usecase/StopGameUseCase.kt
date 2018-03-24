@@ -3,11 +3,15 @@ package ru.monopolio.quiz.core.usecase
 class StopGameUseCase(
         repositories: Repositories,
         private val chatId: Long
-) : UseCase(repositories) {
+) : UseCase<Unit>(repositories) {
 
     override suspend fun run() {
         val repository = repositories
                 .sessionRepository
+
+        repositories
+                .sessionRepository
+                .getSessionByChat(chatId) ?: return
 
         repository
                 .getSessionByChat(chatId)

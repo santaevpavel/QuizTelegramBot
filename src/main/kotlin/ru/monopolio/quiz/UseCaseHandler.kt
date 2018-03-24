@@ -5,9 +5,13 @@ import ru.monopolio.quiz.core.usecase.UseCase
 
 class UseCaseHandler {
 
-    fun handle(useCase: UseCase) {
+    private val lock = "123"
+
+    fun handle(useCase: UseCase<*>) {
         launch {
-            useCase.run()
+            synchronized(lock) {
+                useCase.run()
+            }
         }
     }
 }

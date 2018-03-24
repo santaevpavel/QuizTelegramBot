@@ -2,11 +2,12 @@ package ru.monopolio.quiz.core.usecase
 
 import ru.monopolio.quiz.core.entity.Round
 import ru.monopolio.quiz.core.repository.IMessageRepository
+import java.util.concurrent.TimeUnit
 
-class NewRoundUseCase(
+class CreateRoundUseCase(
         repositories: Repositories,
         private val chatId: Long
-) : UseCase(repositories) {
+) : UseCase<Unit>(repositories) {
 
     override suspend fun run() {
         val session = repositories
@@ -17,7 +18,7 @@ class NewRoundUseCase(
                 .questionRepository
                 .getNextQuestion()
 
-        repositories
+        val round = repositories
                 .roundRepository
                 .createRound(Round(session, question))
 
@@ -26,6 +27,14 @@ class NewRoundUseCase(
                 .createNewQuestionMessage(
                         IMessageRepository.QuestionMessage(session.chatId, question.question)
                 )
+
+        scheduleStopRoundUseCase(round)
+    }
+
+    private fun scheduleStopRoundUseCase(round: Round) {
+        scheduler.schedule(5, TimeUnit.SECONDS) {
+            StopRoundUseCase(repositories, chatId, round, true).run()
+        }
     }
 
 }

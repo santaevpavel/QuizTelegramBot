@@ -10,6 +10,10 @@ interface IMessageRepository {
 
     fun createNewQuestionMessage(message: QuestionMessage)
 
+    fun createStopRoundMessage(message: StopRoundMessage)
+
+    fun createStopRoundMessage2(message: StopRoundMessage)
+
     fun createPointsMessage(message: PointsMessage)
 
     open class Message(val chatId: Long)
@@ -24,6 +28,11 @@ interface IMessageRepository {
     class QuestionMessage(
             chatId: Long,
             val question: String
+    ) : Message(chatId)
+
+    class StopRoundMessage(
+            chatId: Long,
+            val answer: String
     ) : Message(chatId)
 
     class PointsMessage(

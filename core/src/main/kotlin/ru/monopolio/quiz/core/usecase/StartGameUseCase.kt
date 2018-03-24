@@ -5,7 +5,7 @@ import ru.monopolio.quiz.core.entity.Session
 class StartGameUseCase(
         repositories: Repositories,
         private val chatId: Long
-) : UseCase(repositories) {
+) : UseCase<Unit>(repositories) {
 
     override suspend fun run() {
         val repository = repositories
@@ -14,7 +14,7 @@ class StartGameUseCase(
 
         if (session == null) {
             repository.createSession(Session(chatId))
-            NewRoundUseCase(
+            CreateRoundUseCase(
                     repositories,
                     chatId
             ).run()
