@@ -1,14 +1,16 @@
 package ru.monopolio.quiz.core.repository
 
-import ru.monopolio.quiz.core.entity.Round
-import ru.monopolio.quiz.core.entity.Session
+import ru.monopolio.quiz.core.dto.RoundDto
+import ru.monopolio.quiz.core.dto.SessionDto
 
 interface IRoundRepository {
 
-    fun createRound(round: Round): Round
+    fun createRound(round: RoundDto): RoundDto
 
-    fun updateRound(round: Round)
+    fun updateRound(round: RoundDto)
 
-    fun getLatestRound(session: Session): Round
+    fun getLatestRound(session: SessionDto): RoundDto?
+
+    fun getRound(id: Long): RoundDto?
 
 }

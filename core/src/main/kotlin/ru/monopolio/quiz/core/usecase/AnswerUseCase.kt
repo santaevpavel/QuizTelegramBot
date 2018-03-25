@@ -1,32 +1,17 @@
 package ru.monopolio.quiz.core.usecase
 
-import ru.monopolio.quiz.core.entity.Player
-import ru.monopolio.quiz.core.repository.IMessageRepository
+import ru.monopolio.quiz.core.Application
+import ru.monopolio.quiz.core.dto.MessageDto
 
 class AnswerUseCase(
-        repositories: Repositories,
         private val chatId: Long,
-        private val answer: String,
-        private val player: Player
-) : UseCase<Unit>(repositories) {
+        private val message: MessageDto
+) : UseCase<Unit>() {
+
+    private val session = Application.entityModule.session
 
     override suspend fun run() {
-        val session = repositories
-                .sessionRepository
-                .getSessionByChat(chatId) ?: return
-
-        val round = repositories
-                .roundRepository
-                .getLatestRound(session)
-
-        if (round.isFinished) return
-
-        if (round.question.answer == answer) {
-            StopRoundUseCase(repositories, chatId, round, false).run()
-            repositories
-                    .messageRepository
-                    .createWinnerMessage(IMessageRepository.WinnerMessage(chatId, player.name))
-        }
+        session.onAnswer(chatId, message)
     }
 
 }

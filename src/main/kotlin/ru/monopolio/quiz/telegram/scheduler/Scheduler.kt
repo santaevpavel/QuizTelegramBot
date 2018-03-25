@@ -1,7 +1,9 @@
-package ru.monopolio.quiz.core.scheduler
+package ru.monopolio.quiz.telegram.scheduler
 
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
+import ru.monopolio.quiz.core.scheduler.IScheduler
+import ru.monopolio.quiz.core.scheduler.Job
 import java.util.concurrent.TimeUnit
 
 class Scheduler : IScheduler {

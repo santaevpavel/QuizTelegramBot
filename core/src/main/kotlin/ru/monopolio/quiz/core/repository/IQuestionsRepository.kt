@@ -1,8 +1,8 @@
 package ru.monopolio.quiz.core.repository
 
-import ru.monopolio.quiz.core.entity.Question
+import ru.monopolio.quiz.core.dto.QuestionDto
 
 interface IQuestionsRepository {
 
-    fun getNextQuestion(): Question
+    fun getNextQuestion(): QuestionDto
 }

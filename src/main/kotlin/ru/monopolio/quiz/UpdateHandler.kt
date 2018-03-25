@@ -1,8 +1,9 @@
 package ru.monopolio.quiz
 
-import ru.monopolio.quiz.core.entity.Player
+import ru.monopolio.quiz.core.dto.MessageDto
+import ru.monopolio.quiz.core.dto.PlayerDto
+import ru.monopolio.quiz.core.repository.Repositories
 import ru.monopolio.quiz.core.usecase.AnswerUseCase
-import ru.monopolio.quiz.core.usecase.Repositories
 import ru.monopolio.quiz.core.usecase.StartGameUseCase
 import ru.monopolio.quiz.core.usecase.StopGameUseCase
 import ru.monopolio.quiz.telegram.entities.Update
@@ -12,24 +13,22 @@ class UpdateHandler(
         private val repositories: Repositories
 ) {
 
-    fun handleUpdate(update: Update) {
+    fun handle(update: Update) {
         val text = update.message?.text ?: return
         val chatId = update.message.chat.id
 
         val useCase = when (text.toLowerCase()) {
             "start" -> {
-                StartGameUseCase(repositories, chatId)
+                StartGameUseCase(chatId)
             }
             "end" -> {
-                StopGameUseCase(repositories, chatId)
+                StopGameUseCase(chatId)
             }
             "points" -> throw NotImplementedError()
             else -> {
                 AnswerUseCase(
-                        repositories,
                         chatId,
-                        update.message.text,
-                        Player(-1, update.message.from?.firstName!!)
+                        MessageDto(chatId, update.message.text, PlayerDto(-1L, update.message.from?.firstName!!))
                 )
             }
         }

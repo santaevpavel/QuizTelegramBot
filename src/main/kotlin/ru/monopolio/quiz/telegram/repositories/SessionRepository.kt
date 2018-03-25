@@ -1,25 +1,26 @@
 package ru.monopolio.quiz.telegram.repositories
 
-import ru.monopolio.quiz.core.entity.Session
+import ru.monopolio.quiz.core.dto.SessionDto
 import ru.monopolio.quiz.core.repository.ISessionRepository
 
 object SessionRepository : ISessionRepository {
 
-    private val list = mutableListOf<Session>()
+    private val list = mutableListOf<SessionDto>()
     private var nextId = 0L
 
-    override fun createSession(session: Session): Session {
-        list.add(session)
+    override fun createSession(session: SessionDto): SessionDto {
         nextId++
-        return session.copy(id = nextId)
+        val newSession = session.copy(id = nextId)
+        list.add(newSession)
+        return newSession
     }
 
-    override fun getSessionByChat(chatId: Long): Session? = list.firstOrNull { it.chatId == chatId }
+    override fun getSessionByChat(chatId: Long): SessionDto? = list.firstOrNull { it.chatId == chatId }
 
     override fun deleteSession(id: Long) {
         list.removeIf { it.id == id }
     }
 
-    override fun getSession(id: Long) = list.first { it.id == id }
+    override fun getSession(id: Long) = list.firstOrNull { it.id == id }
 
 }

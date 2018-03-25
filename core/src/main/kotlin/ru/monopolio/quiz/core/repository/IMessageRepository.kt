@@ -1,42 +1,20 @@
 package ru.monopolio.quiz.core.repository
 
-import ru.monopolio.quiz.core.entity.Player
+import ru.monopolio.quiz.core.dto.message.CreateGameMessageRepositoryDto
+import ru.monopolio.quiz.core.dto.message.QuestionMessageRepositoryDto
+import ru.monopolio.quiz.core.dto.message.StopRoundMessageRepositoryDto
+import ru.monopolio.quiz.core.dto.message.WinnerMessageRepositoryDto
 
 interface IMessageRepository {
 
-    fun createCreateGameMessage(message: CreateGameMessage)
+    fun createCreateGameMessage(message: CreateGameMessageRepositoryDto)
 
-    fun createWinnerMessage(message: WinnerMessage)
+    fun createWinnerMessage(message: WinnerMessageRepositoryDto)
 
-    fun createNewQuestionMessage(message: QuestionMessage)
+    fun createNewQuestionMessage(message: QuestionMessageRepositoryDto)
 
-    fun createStopRoundMessage(message: StopRoundMessage)
+    fun createStopRoundMessage(message: StopRoundMessageRepositoryDto)
 
-    fun createStopRoundMessage2(message: StopRoundMessage)
+    fun createStopRoundMessage2(message: StopRoundMessageRepositoryDto)
 
-    fun createPointsMessage(message: PointsMessage)
-
-    open class Message(val chatId: Long)
-
-    class CreateGameMessage(chatId: Long) : Message(chatId)
-
-    class WinnerMessage(
-            chatId: Long,
-            val player: String
-    ) : Message(chatId)
-
-    class QuestionMessage(
-            chatId: Long,
-            val question: String
-    ) : Message(chatId)
-
-    class StopRoundMessage(
-            chatId: Long,
-            val answer: String
-    ) : Message(chatId)
-
-    class PointsMessage(
-            chatId: Long,
-            val points: Map<Player, Int>
-    ) : Message(chatId)
 }

@@ -1,21 +1,15 @@
 package ru.monopolio.quiz.core.usecase
 
+import ru.monopolio.quiz.core.Application
+
 class StopGameUseCase(
-        repositories: Repositories,
         private val chatId: Long
-) : UseCase<Unit>(repositories) {
+) : UseCase<Unit>() {
+
+    private val session = Application.entityModule.session
 
     override suspend fun run() {
-        val repository = repositories
-                .sessionRepository
-
-        repositories
-                .sessionRepository
-                .getSessionByChat(chatId) ?: return
-
-        repository
-                .getSessionByChat(chatId)
-                ?.let { repository.deleteSession(it.id) }
+        this.session.stopSession(chatId)
     }
 
 }
