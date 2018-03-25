@@ -1,4 +1,4 @@
-package ru.monopolio.quiz.telegram.repositories
+package ru.monopolio.quiz.repositories
 
 import kotlinx.coroutines.experimental.launch
 import ru.monopolio.quiz.core.dto.message.CreateGameMessageRepositoryDto

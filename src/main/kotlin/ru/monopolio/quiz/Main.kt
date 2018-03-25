@@ -21,21 +21,24 @@ import ru.monopolio.quiz.core.di.IAppModule
 import ru.monopolio.quiz.core.repository.Repositories
 import ru.monopolio.quiz.core.scheduler.IScheduler
 import ru.monopolio.quiz.properties.LocalProperties
+import ru.monopolio.quiz.question.source.InMemoryQuestionSource
+import ru.monopolio.quiz.question.source.ViquizQuestionSourceParser
+import ru.monopolio.quiz.repositories.MessageRepository
+import ru.monopolio.quiz.repositories.QuestionRepository
+import ru.monopolio.quiz.repositories.RoundRepository
+import ru.monopolio.quiz.repositories.SessionRepository
+import ru.monopolio.quiz.scheduler.Scheduler
 import ru.monopolio.quiz.telegram.TelegramBot
 import ru.monopolio.quiz.telegram.entities.Update
-import ru.monopolio.quiz.telegram.repositories.MessageRepository
-import ru.monopolio.quiz.telegram.repositories.QuestionRepository
-import ru.monopolio.quiz.telegram.repositories.RoundRepository
-import ru.monopolio.quiz.telegram.repositories.SessionRepository
-import ru.monopolio.quiz.telegram.scheduler.Scheduler
 
 fun main(args: Array<String>) {
     val token = LocalProperties().token
     val bot = TelegramBot(token)
+    val questionRepository = QuestionRepository
     val repositories = Repositories(
             roundRepository = RoundRepository,
             messageRepository = MessageRepository(bot),
-            questionRepository = QuestionRepository,
+            questionRepository = questionRepository,
             sessionRepository = SessionRepository
     )
     val useCaseHandler = UseCaseHandler()
@@ -44,6 +47,8 @@ fun main(args: Array<String>) {
             repositories
     )
     val scheduler = Scheduler()
+    val questionSource = InMemoryQuestionSource(ViquizQuestionSourceParser().read("questions.txt"))
+    questionRepository.questionSource = questionSource
 
     Application.init(appModule = object : IAppModule {
 

@@ -1,4 +1,4 @@
-package ru.monopolio.quiz.telegram.scheduler
+package ru.monopolio.quiz.scheduler
 
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch

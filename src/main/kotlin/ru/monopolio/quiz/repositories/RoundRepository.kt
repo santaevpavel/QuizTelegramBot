@@ -1,4 +1,4 @@
-package ru.monopolio.quiz.telegram.repositories
+package ru.monopolio.quiz.repositories
 
 import ru.monopolio.quiz.core.dto.RoundDto
 import ru.monopolio.quiz.core.dto.SessionDto

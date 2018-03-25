@@ -67,7 +67,7 @@ internal class Round(
     }
 
     private fun scheduleStopRoundUseCase(session: SessionDto, round: RoundDto) {
-        scheduler.schedule(10, TimeUnit.SECONDS) {
+        scheduler.schedule(20, TimeUnit.SECONDS) {
             val roundFromRepository = repositories.roundRepository.getRound(round.id) ?: return@schedule
             if (stopRound(session, roundFromRepository, true)) {
                 repositories
