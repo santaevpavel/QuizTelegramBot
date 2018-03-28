@@ -4,6 +4,7 @@ import ru.monopolio.quiz.core.dto.RoundDto
 import ru.monopolio.quiz.core.dto.SessionDto
 import ru.monopolio.quiz.core.dto.message.QuestionMessageRepositoryDto
 import ru.monopolio.quiz.core.dto.message.StopRoundMessageRepositoryDto
+import ru.monopolio.quiz.core.dto.message.SuggestionMessageRepositoryDto
 import ru.monopolio.quiz.core.repository.Repositories
 import ru.monopolio.quiz.core.scheduler.IScheduler
 import ru.monopolio.quiz.core.utils.log
@@ -11,7 +12,8 @@ import java.util.concurrent.TimeUnit
 
 internal class Round(
         private val repositories: Repositories,
-        private val scheduler: IScheduler
+        private val scheduler: IScheduler,
+        private val question: Question
 ) {
 
     fun startRound(session: SessionDto) {
@@ -29,7 +31,8 @@ internal class Round(
                         QuestionMessageRepositoryDto(session.chatId, question.question)
                 )
 
-        scheduleStopRoundUseCase(session, round)
+        scheduleSuggestions(session, round)
+        scheduleStopRound(session, round)
     }
 
     fun stopLatestRound(
@@ -55,19 +58,36 @@ internal class Round(
                 .roundRepository
                 .updateRound(round.copy(isFinished = true))
         if (scheduleNewRound) {
-            scheduleNewRoundUseCase(session)
+            scheduleNewRound(session)
         }
         return true
     }
 
-    private fun scheduleNewRoundUseCase(session: SessionDto) {
-        scheduler.schedule(3, TimeUnit.SECONDS) {
+    private fun showSuggestion(
+            session: SessionDto,
+            round: RoundDto,
+            partOfChars: Double
+    ) {
+        if (round.isFinished) return
+
+        val suggestion = question.getSuggestion(round.question, partOfChars)
+
+        repositories
+                .messageRepository
+                .createSuggestionMessage(SuggestionMessageRepositoryDto(
+                        session.chatId,
+                        suggestion
+                ))
+    }
+
+    private fun scheduleNewRound(session: SessionDto) {
+        scheduler.schedule(10, TimeUnit.SECONDS) {
             startRound(session)
         }
     }
 
-    private fun scheduleStopRoundUseCase(session: SessionDto, round: RoundDto) {
-        scheduler.schedule(20, TimeUnit.SECONDS) {
+    private fun scheduleStopRound(session: SessionDto, round: RoundDto) {
+        scheduler.schedule(35, TimeUnit.SECONDS) {
             val roundFromRepository = repositories.roundRepository.getRound(round.id) ?: return@schedule
             if (stopRound(session, roundFromRepository, true)) {
                 repositories
@@ -78,6 +98,27 @@ internal class Round(
                         ))
             }
 
+        }
+    }
+
+    private fun scheduleSuggestions(session: SessionDto, round: RoundDto) {
+        scheduler.schedule(5, TimeUnit.SECONDS) {
+            repositories
+                    .roundRepository
+                    .getRound(round.id)
+                    ?.let { showSuggestion(session, it, 0.0) }
+        }
+        scheduler.schedule(15, TimeUnit.SECONDS) {
+            repositories
+                    .roundRepository
+                    .getRound(round.id)
+                    ?.let { showSuggestion(session, it, 0.3) }
+        }
+        scheduler.schedule(25, TimeUnit.SECONDS) {
+            repositories
+                    .roundRepository
+                    .getRound(round.id)
+                    ?.let { showSuggestion(session, it, 0.7) }
         }
     }
 }

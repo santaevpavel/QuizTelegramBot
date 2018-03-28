@@ -11,7 +11,7 @@ object Application {
     internal val appModule: IAppModule by lazy { appModuleBackingField.checkInit() }
     internal val entityModule: IEntityModule = object : IEntityModule {
 
-        override val round: Round by lazy { Round(appModule.repositories, appModule.scheduler) }
+        override val round: Round by lazy { Round(appModule.repositories, appModule.scheduler, question) }
 
         override val question: Question by lazy { Question() }
 

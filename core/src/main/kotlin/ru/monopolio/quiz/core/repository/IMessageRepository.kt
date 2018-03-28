@@ -1,9 +1,6 @@
 package ru.monopolio.quiz.core.repository
 
-import ru.monopolio.quiz.core.dto.message.CreateGameMessageRepositoryDto
-import ru.monopolio.quiz.core.dto.message.QuestionMessageRepositoryDto
-import ru.monopolio.quiz.core.dto.message.StopRoundMessageRepositoryDto
-import ru.monopolio.quiz.core.dto.message.WinnerMessageRepositoryDto
+import ru.monopolio.quiz.core.dto.message.*
 
 interface IMessageRepository {
 
@@ -16,5 +13,7 @@ interface IMessageRepository {
     fun createStopRoundMessage(message: StopRoundMessageRepositoryDto)
 
     fun createStopRoundMessage2(message: StopRoundMessageRepositoryDto)
+
+    fun createSuggestionMessage(message: SuggestionMessageRepositoryDto)
 
 }
